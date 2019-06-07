@@ -26,7 +26,7 @@ class concurrent_queue_node {
 
   value_type value_;
   type* volatile next_;
-  type* volatile last_;
+  // type* volatile last_;
 
   friend concurrent_queue<value_type>;
 };
@@ -38,7 +38,15 @@ class concurrent_queue {
   typedef T value_type;
   typedef concurrent_queue_node<value_type> node_type;
 
-  concurrent_queue() { head_ = tail_ = nullptr; }
+  ~concurrent_queue() { delete[](char*) sentinel; }
+
+  concurrent_queue() : sentinel(nullptr) {
+    sentinel = (node_type*)new char[sizeof(node_type)];
+    sentinel->next_ = /*sentinel->last_ =*/sentinel;
+    head_ = tail_ = sentinel;
+  }
+
+  bool empty() { return sentinel == tail_.load(); }
 
   void push_back(const value_type& v) {
     auto node = new node_type(v);
@@ -52,7 +60,7 @@ class concurrent_queue {
 
   std::shared_ptr<value_type> pop_front() {
     node_type* node = pop_front_impl();
-    if (nullptr == node) {
+    if (node == sentinel) {
       return std::shared_ptr<value_type>();
     } else {
       auto val = node->return_ptr();
@@ -62,51 +70,70 @@ class concurrent_queue {
   }
 
  private:
-  void push_back_impl(node_type* node) {
-    node->next_ = nullptr;
+  void push_back_impl(node_type* node) noexcept {
+    /*
+     * node->next_ = sentinel;
+     * node->last_ = sentinel->last_;
+     * sentinel->last_->next_ = node;
+     * sentinel->last_ = node;
+     */
+
+    node->next_ = sentinel;
+    auto tail = tail_.load();
     for (;;) {
-      node_type* tail = tail_.load();
-      node->last_ = tail;
-      if (nullptr == tail) {
-        // insert head
-        if (head_.compare_exchange_weak(tail, node)) {
-          tail_.store(node);
-          return;
-        }
-      } else {
-        // insert tail
-        if (tail_.compare_exchange_weak(tail, node)) {
+      if (tail_.compare_exchange_weak(tail, node)) {
+        // guarantee: tail is not released
+        if (tail == sentinel) {
+          head_.store(node);
+        } else {
           tail->next_ = node;
-          return;
         }
+        return;
       }
     }
   }
 
-  node_type* pop_front_impl() {
+  node_type* pop_front_impl() noexcept {
+    /*
+     * auto node = sentinel->next_;
+     * node->next_->last_ = sentinel;
+     * sentinel->next_ = node->next_;
+     * return node;
+     */
+
+    auto head = head_.load();
     for (;;) {
-      node_type* tail = tail_.load();
-      node_type* head = head_.load();
-      if (nullptr == tail) {
-        // empty
-        return nullptr;
-      } else if (head == tail) {
-        // only one element
-        if (tail_.compare_exchange_weak(tail, nullptr)) {
-          head_.store(nullptr);
+      if (head == sentinel) {
+        // no task, or it is/are not ready
+        return sentinel;
+      }
+      if (head != nullptr) {
+        if (head_.compare_exchange_weak(head, nullptr)) {
+          auto next = head->next_;
+          if (next == sentinel) {
+            auto t = head;
+            // only one element
+            if (tail_.compare_exchange_strong(t, sentinel)) {
+              t = nullptr;
+              head_.compare_exchange_strong(t, sentinel);
+              return head;
+            }
+            do {
+              // push-pop conflict, spin
+              next = head->next_;
+            } while (next == sentinel);
+          }
+          head_.store(next);
           return head;
         }
       } else {
-        node_type* next = head->next_;
-        if (nullptr != next && head_.compare_exchange_weak(head, next)) {
-          next->last_ = nullptr;
-          return head;
-        }
+        head = head_.load();
       }
     }
   }
 
   std::atomic<node_type*> head_, tail_;
+  node_type* sentinel;
 };
 
 #endif  // CONCURRENT_QUEUE_H
