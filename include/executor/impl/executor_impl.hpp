@@ -23,7 +23,7 @@ class thread_pool_executor : public abstract_executor_service {
   virtual ~thread_pool_executor() { shutdown(); }
 
   explicit thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : state_(STOP), num_threads_(num_threads), free_threads_(0) {
+      : task_queue_(), state_(STOP), num_threads_(num_threads), free_threads_(0) {
     if (start_immediately) {
       startup();
     }
@@ -77,9 +77,11 @@ class thread_pool_executor : public abstract_executor_service {
 
         // wait new tasks
         std::unique_lock<std::mutex> lock(wakeup_mutex_);
-        free_threads_++;
-        wakeup_event_.wait_for(lock, std::chrono::seconds(30));
-        free_threads_--;
+        if (task_queue_.empty()) {
+          free_threads_++;
+          wakeup_event_.wait_for(lock, std::chrono::seconds(5));
+          free_threads_--;
+        }
       }
     }
   }
