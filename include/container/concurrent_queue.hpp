@@ -15,16 +15,11 @@ class concurrent_queue_node {
   typedef T value_type;
   typedef concurrent_queue_node<value_type> type;
 
-  /**
-   * return shared_ptr which wrap the value, and invalid the object.
-   */
-  std::shared_ptr<value_type> return_ptr() { return std::shared_ptr<value_type>(new value_type(std::move(value_))); }
-
  private:
-  explicit concurrent_queue_node(const value_type& v) : value_(v){};
-  explicit concurrent_queue_node(value_type&& v) : value_(std::move(v)){};
+  explicit concurrent_queue_node(const value_type& v) : value_(new value_type(v)){};
+  explicit concurrent_queue_node(value_type&& v) : value_(new value_type(std::move(v))){};
 
-  value_type value_;
+  value_type* value_;
   type* volatile next_;
   // type* volatile last_;
 
@@ -63,9 +58,9 @@ class concurrent_queue {
     if (node == sentinel) {
       return std::shared_ptr<value_type>();
     } else {
-      auto val = node->return_ptr();
+      auto val = node->value_;
       delete node;
-      return val;
+      return std::shared_ptr<value_type>(val);
     }
   }
 
