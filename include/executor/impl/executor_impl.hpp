@@ -20,8 +20,6 @@ class abstract_executor_service : virtual public executor_service {
 
 class thread_pool_executor : public abstract_executor_service {
  public:
-  virtual ~thread_pool_executor() { shutdown(); }
-
   explicit thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
       : task_queue_(), state_(STOP), num_threads_(num_threads), free_threads_(0) {
     if (start_immediately) {
