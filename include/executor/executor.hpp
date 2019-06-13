@@ -42,6 +42,8 @@ struct executor_handler {
 
 class executor {
  public:
+  virtual ~executor() {}
+
   virtual void execute(const executor_handler& command) {
     // pass rvalue
     auto copy = command;
@@ -50,7 +52,7 @@ class executor {
   virtual void execute(executor_handler&& command) {
     // pass lvalue;
     execute(command);
-  };
+  }
 };
 
 class executor_service : virtual public executor {
