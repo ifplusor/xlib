@@ -130,10 +130,14 @@ inline std::chrono::steady_clock::time_point until_time_point(long delay, time_u
 class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor_service {
  public:
   explicit scheduled_thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : thread_pool_executor(num_threads == 1 ? 0 : num_threads, false),
-        stopped_(true),
-        single_thread_(num_threads == 1),
-        time_thread_(nullptr) {
+      : thread_pool_executor(num_threads, false), stopped_(true), single_thread_(false), time_thread_(nullptr) {
+    if (start_immediately) {
+      startup();
+    }
+  }
+
+  explicit scheduled_thread_pool_executor(bool start_immediately = true)
+      : thread_pool_executor(0, false), stopped_(true), single_thread_(true), time_thread_(nullptr) {
     if (start_immediately) {
       startup();
     }
@@ -169,6 +173,14 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
 
   bool is_shutdown() override { return stopped_; }
 
+  std::future<void> submit(const handler_type& task) override {
+    if (!single_thread_) {
+      return thread_pool_executor::submit(task);
+    } else {
+      return schedule(task, 0, time_unit::milliseconds);
+    }
+  }
+
   std::future<void> schedule(const handler_type& task, long delay, time_unit unit) override {
     auto time_point = until_time_point(delay, unit);
     scheduled_executor_handler handler(task, time_point);
@@ -196,7 +208,7 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
         auto& top = const_cast<scheduled_executor_handler&>(time_queue_.top());
         if (top.wakeup_time_ <= now) {
           if (!single_thread_) {
-            execute(std::move(top));
+            thread_pool_executor::execute(std::move(top));
             time_queue_.pop();
           } else {
             auto copy = top;
