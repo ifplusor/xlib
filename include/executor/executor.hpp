@@ -62,24 +62,6 @@ class executor_service : virtual public executor {
 
 enum time_unit { nanoseconds, microseconds, milliseconds, seconds, minutes, hours };
 
-std::chrono::steady_clock::time_point until_time_point(long delay, time_unit unit) {
-  auto now = std::chrono::steady_clock::now();
-  switch (unit) {
-    case nanoseconds:
-      return now + std::chrono::nanoseconds(delay);
-    case microseconds:
-      return now + std::chrono::microseconds(delay);
-    case milliseconds:
-      return now + std::chrono::milliseconds(delay);
-    case seconds:
-      return now + std::chrono::seconds(delay);
-    case minutes:
-      return now + std::chrono::minutes(delay);
-    case hours:
-      return now + std::chrono::hours(delay);
-  }
-}
-
 class scheduled_executor_service : virtual public executor_service {
  public:
   virtual std::future<void> schedule(const handler_type& task, long delay, time_unit unit) = 0;
