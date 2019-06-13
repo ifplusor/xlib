@@ -109,7 +109,7 @@ struct scheduled_executor_handler : public executor_handler {
   bool operator<(const scheduled_executor_handler& other) const { return (wakeup_time_ > other.wakeup_time_); }
 };
 
-class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor {
+class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor_service {
  public:
   explicit scheduled_thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
       : thread_pool_executor(num_threads == 1 ? 0 : num_threads, false),

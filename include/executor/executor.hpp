@@ -80,7 +80,8 @@ std::chrono::steady_clock::time_point until_time_point(long delay, time_unit uni
   }
 }
 
-class scheduled_executor : virtual public executor_service {
+class scheduled_executor_service : virtual public executor_service {
+ public:
   virtual std::future<void> schedule(const handler_type& task, long delay, time_unit unit) = 0;
 };
 
