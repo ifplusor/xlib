@@ -21,7 +21,6 @@ class concurrent_queue_node {
 
   value_type* value_;
   type* volatile next_;
-  // type* volatile last_;
 
   friend concurrent_queue<value_type>;
 };
@@ -37,7 +36,7 @@ class concurrent_queue {
 
   concurrent_queue() : sentinel(nullptr) {
     sentinel = (node_type*)new char[sizeof(node_type)];
-    sentinel->next_ = /*sentinel->last_ =*/sentinel;
+    sentinel->next_ = sentinel;
     head_ = tail_ = sentinel;
   }
 
@@ -66,36 +65,17 @@ class concurrent_queue {
 
  private:
   void push_back_impl(node_type* node) noexcept {
-    /*
-     * node->next_ = sentinel;
-     * node->last_ = sentinel->last_;
-     * sentinel->last_->next_ = node;
-     * sentinel->last_ = node;
-     */
-
     node->next_ = sentinel;
-    auto tail = tail_.load();
-    for (;;) {
-      if (tail_.compare_exchange_weak(tail, node)) {
-        // guarantee: tail is not released
-        if (tail == sentinel) {
-          head_.store(node);
-        } else {
-          tail->next_ = node;
-        }
-        return;
-      }
+    auto tail = tail_.exchange(node);
+    if (tail == sentinel) {
+      head_.store(node);
+    } else {
+      // guarantee: tail is not released
+      tail->next_ = node;
     }
   }
 
   node_type* pop_front_impl() noexcept {
-    /*
-     * auto node = sentinel->next_;
-     * node->next_->last_ = sentinel;
-     * sentinel->next_ = node->next_;
-     * return node;
-     */
-
     auto head = head_.load();
     for (;;) {
       if (head == sentinel) {
