@@ -1,5 +1,5 @@
-#ifndef EXECUTOR_IMPL_H
-#define EXECUTOR_IMPL_H
+#ifndef XLIB_EXECUTOR_IMPL_HPP
+#define XLIB_EXECUTOR_IMPL_HPP
 
 #include <atomic>
 #include <memory>
@@ -7,6 +7,9 @@
 
 #include "../../container/concurrent_queue.hpp"
 #include "../../system/thread_group.hpp"
+#include "../../time.hpp"
+
+namespace xlib {
 
 class abstract_executor_service : virtual public executor_service {
  public:
@@ -106,24 +109,6 @@ struct scheduled_executor_handler : public executor_handler {
 
   bool operator<(const scheduled_executor_handler& other) const { return (wakeup_time_ > other.wakeup_time_); }
 };
-
-inline std::chrono::steady_clock::time_point until_time_point(long delay, time_unit unit) {
-  auto now = std::chrono::steady_clock::now();
-  switch (unit) {
-    case nanoseconds:
-      return now + std::chrono::nanoseconds(delay);
-    case microseconds:
-      return now + std::chrono::microseconds(delay);
-    case milliseconds:
-      return now + std::chrono::milliseconds(delay);
-    case seconds:
-      return now + std::chrono::seconds(delay);
-    case minutes:
-      return now + std::chrono::minutes(delay);
-    case hours:
-      return now + std::chrono::hours(delay);
-  }
-}
 
 class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor_service {
  public:
@@ -246,4 +231,6 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
   std::condition_variable time_event_;
 };
 
-#endif  // EXECUTOR_IMPL_H
+}  // namespace xlib
+
+#endif  // XLIB_EXECUTOR_IMPL_HPP

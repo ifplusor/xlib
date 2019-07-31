@@ -1,9 +1,10 @@
-#ifndef THREAD_GROUP_H
-#define THREAD_GROUP_H
+// reference: asio/detail/thread_group.hpp
+#ifndef XLIB_THREAD_GROUP_HPP
+#define XLIB_THREAD_GROUP_HPP
 
 #include <thread>
 
-// reference: asio/detail/thread_group.hpp
+namespace xlib {
 
 class thread_group {
  public:
@@ -51,4 +52,6 @@ class thread_group {
   item* first_;
 };
 
-#endif  // THREAD_GROUP_H
+}  // namespace xlib
+
+#endif  // XLIB_THREAD_GROUP_HPP

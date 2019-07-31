@@ -1,9 +1,11 @@
-#ifndef CONCURRENT_QUEUE_H
-#define CONCURRENT_QUEUE_H
+#ifndef XLIB_CONCURRENT_QUEUE_HPP
+#define XLIB_CONCURRENT_QUEUE_HPP
 
 #include <atomic>
 #include <memory>
 #include <utility>
+
+namespace xlib {
 
 template <typename T>
 class concurrent_queue;
@@ -34,8 +36,7 @@ class concurrent_queue {
 
   ~concurrent_queue() { delete[](char*) sentinel; }
 
-  concurrent_queue() : sentinel(nullptr) {
-    sentinel = (node_type*)new char[sizeof(node_type)];
+  concurrent_queue() : sentinel((node_type*)new char[sizeof(node_type)]) {
     sentinel->next_ = sentinel;
     head_ = tail_ = sentinel;
   }
@@ -43,12 +44,12 @@ class concurrent_queue {
   bool empty() { return sentinel == tail_.load(); }
 
   void push_back(const value_type& v) {
-    auto node = new node_type(v);
+    auto* node = new node_type(v);
     push_back_impl(node);
   }
 
   void push_back(value_type&& v) {
-    auto node = new node_type(std::move(v));
+    auto* node = new node_type(std::move(v));
     push_back_impl(node);
   }
 
@@ -108,7 +109,9 @@ class concurrent_queue {
   }
 
   std::atomic<node_type*> head_, tail_;
-  node_type* sentinel;
+  node_type* const sentinel;
 };
 
-#endif  // CONCURRENT_QUEUE_H
+}  // namespace xlib
+
+#endif  // XLIB_CONCURRENT_QUEUE_HPP

@@ -1,10 +1,13 @@
-#ifndef EXECUTOR_H
-#define EXECUTOR_H
+#ifndef XLIB_EXECUTOR_HPP
+#define XLIB_EXECUTOR_HPP
 
-#include <chrono>
 #include <functional>
 #include <future>
 #include <utility>
+
+#include "../time.hpp"
+
+namespace xlib {
 
 typedef std::function<void()> handler_type;
 
@@ -42,7 +45,7 @@ struct executor_handler {
 
 class executor {
  public:
-  virtual ~executor() {}
+  virtual ~executor() = default;
 
   virtual void execute(const executor_handler& command) {
     // pass rvalue
@@ -62,13 +65,13 @@ class executor_service : virtual public executor {
   virtual std::future<void> submit(const handler_type& task) = 0;
 };
 
-enum time_unit { nanoseconds, microseconds, milliseconds, seconds, minutes, hours };
-
 class scheduled_executor_service : virtual public executor_service {
  public:
   virtual std::future<void> schedule(const handler_type& task, long delay, time_unit unit) = 0;
 };
 
+}  // namespace xlib
+
 #include "impl/executor_impl.hpp"
 
-#endif  // EXECUTOR_H
+#endif  // XLIB_EXECUTOR_HPP
