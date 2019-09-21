@@ -23,8 +23,8 @@ class abstract_executor_service : virtual public executor_service {
 
 class thread_pool_executor : public abstract_executor_service {
  public:
-  explicit thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : task_queue_(), state_(STOP), num_threads_(num_threads), free_threads_(0) {
+  explicit thread_pool_executor(const std::string& name, std::size_t num_threads, bool start_immediately = true)
+      : task_queue_(), state_(STOP), num_threads_(num_threads), thread_group_(name), free_threads_(0) {
     if (start_immediately) {
       startup();
     }
@@ -34,6 +34,7 @@ class thread_pool_executor : public abstract_executor_service {
     if (state_ == STOP) {
       state_ = RUNNING;
       thread_group_.create_threads(std::bind(&thread_pool_executor::run, this), num_threads_);
+      thread_group_.start();
     }
   }
 
@@ -112,15 +113,22 @@ struct scheduled_executor_handler : public executor_handler {
 
 class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor_service {
  public:
-  explicit scheduled_thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : thread_pool_executor(num_threads, false), stopped_(true), single_thread_(false), time_thread_(nullptr) {
+  explicit scheduled_thread_pool_executor(const std::string& name,
+                                          std::size_t num_threads,
+                                          bool start_immediately = true)
+      : thread_pool_executor(name, num_threads, false),
+        stopped_(true),
+        single_thread_(false),
+        timer_thread_(name + "-Timer") {
+    timer_thread_.set_target(&scheduled_thread_pool_executor::time_daemon, this);
     if (start_immediately) {
       startup();
     }
   }
 
-  explicit scheduled_thread_pool_executor(bool start_immediately = true)
-      : thread_pool_executor(0, false), stopped_(true), single_thread_(true), time_thread_(nullptr) {
+  explicit scheduled_thread_pool_executor(const std::string& name, bool start_immediately = true)
+      : thread_pool_executor(name, 0, false), stopped_(true), single_thread_(true), timer_thread_(name + "-Timer") {
+    timer_thread_.set_target(&scheduled_thread_pool_executor::time_daemon, this);
     if (start_immediately) {
       startup();
     }
@@ -135,8 +143,8 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
         thread_pool_executor::startup();
       }
 
-      // startup time daemon
-      time_thread_ = new std::thread(&scheduled_thread_pool_executor::time_daemon, this);
+      // start time daemon
+      timer_thread_.start();
     }
   }
 
@@ -145,8 +153,7 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
       stopped_ = true;
 
       time_event_.notify_one();
-      time_thread_->join();
-      time_thread_ = nullptr;
+      timer_thread_.join();
 
       if (!single_thread_) {
         thread_pool_executor::shutdown();
@@ -225,7 +232,7 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
   bool stopped_;
 
   bool single_thread_;
-  std::thread* time_thread_;
+  thread timer_thread_;
 
   std::mutex time_mutex_;
   std::condition_variable time_event_;

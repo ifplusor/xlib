@@ -2,7 +2,7 @@
 #ifndef XLIB_THREAD_GROUP_HPP
 #define XLIB_THREAD_GROUP_HPP
 
-#include <thread>
+#include "thread.hpp"
 
 namespace xlib {
 
@@ -10,6 +10,12 @@ class thread_group {
  public:
   // Constructor initialises an empty thread group.
   thread_group() : first_(nullptr) {}
+  thread_group(const std::string& name) : name_(name), first_(nullptr) {}
+
+  template <typename Function>
+  thread_group(const std::string& name, Function f, std::size_t num_threads) : name_(name), first_(nullptr) {
+    create_thread(f, num_threads);
+  }
 
   // Destructor joins any remaining threads in the group.
   ~thread_group() { join(); }
@@ -17,7 +23,7 @@ class thread_group {
   // Create a new thread in the group.
   template <typename Function>
   void create_thread(Function f) {
-    first_ = new item(f, first_);
+    first_ = new item(name_, f, first_);
   }
 
   // Create new threads in the group.
@@ -28,11 +34,19 @@ class thread_group {
     }
   }
 
+  void start() {
+    auto* it = first_;
+    while (it != nullptr) {
+      it->start();
+      it = it->next_;
+    }
+  }
+
   // Wait for all threads in the group to exit.
   void join() {
     while (first_) {
       first_->thread_.join();
-      item* tmp = first_;
+      auto* tmp = first_;
       first_ = first_->next_;
       delete tmp;
     }
@@ -42,11 +56,18 @@ class thread_group {
   // Structure used to track a single thread in the group.
   struct item {
     template <typename Function>
-    explicit item(Function f, item* next) : thread_(f), next_(next) {}
+    explicit item(const std::string& name, Function f, item* next) : thread_(name), next_(next) {
+      thread_.set_target(f);
+    }
 
-    std::thread thread_;
+    void start() { thread_.start(); }
+
+    thread thread_;
     item* next_;
   };
+
+ private:
+  std::string name_;
 
   // The first thread in the group.
   item* first_;

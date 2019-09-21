@@ -11,7 +11,7 @@ std::atomic<int> acc(0);
 
 int main() {
   int threads_num = 3;
-  thread_pool_executor es(threads_num);
+  thread_pool_executor es("Executor", threads_num);
 
   std::random_device rd;   // Will be used to obtain a seed for the random number engine
   std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
