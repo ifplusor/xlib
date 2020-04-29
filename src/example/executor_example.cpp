@@ -50,13 +50,13 @@ int main() {
   t1.join();
   t2.join();
 
-  es.shutdown();
+  es.shutdown(false);
 
   std::cout << "count=" << count << std::endl;
   std::cout << "acc=" << acc << std::endl;
 
   if (count != acc || tmp != 10000000) {
-    std::cout << "error!!!" << std::endl;
+    std::cout << "error!!! tmp:" << tmp << std::endl;
   }
 
   return 0;
