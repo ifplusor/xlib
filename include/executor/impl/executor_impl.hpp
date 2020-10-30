@@ -129,8 +129,8 @@ struct scheduled_executor_handler : public executor_handler {
 
 class scheduled_thread_pool_executor : public thread_pool_executor, virtual public scheduled_executor_service {
  public:
-  explicit scheduled_thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : thread_pool_executor(num_threads, false),
+  explicit scheduled_thread_pool_executor(std::size_t thread_nums, bool start_immediately = true)
+      : thread_pool_executor(thread_nums, false),
         time_queue_(&scheduled_executor_handler::less),
         stopped_(true),
         single_thread_(false),
@@ -141,9 +141,9 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
     }
   }
   explicit scheduled_thread_pool_executor(const std::string& name,
-                                          std::size_t num_threads,
+                                          std::size_t thread_nums,
                                           bool start_immediately = true)
-      : thread_pool_executor(name, num_threads, false),
+      : thread_pool_executor(name, thread_nums, false),
         time_queue_(&scheduled_executor_handler::less),
         stopped_(true),
         single_thread_(false),

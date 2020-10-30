@@ -27,7 +27,7 @@ class concurrent_queue_node {
   explicit concurrent_queue_node(E v) : value_(v) {}
 
   value_type* value_;
-  type* volatile next_;
+  std::atomic<type*> next_;
 
   friend concurrent_queue<value_type>;
 };
@@ -39,7 +39,7 @@ class concurrent_queue {
   typedef T value_type;
   typedef concurrent_queue_node<value_type> node_type;
 
-  ~concurrent_queue() {
+  virtual ~concurrent_queue() {
     // clear this queue
     while (_clear_when_destruct) {
       if (nullptr == pop_front()) {
@@ -51,17 +51,20 @@ class concurrent_queue {
   }
 
   concurrent_queue(bool clear_when_destruct = true)
-      : sentinel((node_type*)new char[sizeof(node_type)]), _clear_when_destruct(clear_when_destruct) {
-    sentinel->next_ = sentinel;
+      : sentinel((node_type*)new char[sizeof(node_type)]), size_(0), _clear_when_destruct(clear_when_destruct) {
+    sentinel->next_.store(sentinel);
     head_ = tail_ = sentinel;
   }
 
   bool empty() { return sentinel == tail_.load(); }
 
+  size_t size() { return size_.load(); }
+
   template <class E>
   void push_back(E&& v) {
     auto* node = new node_type(std::forward<E>(v));
     push_back_impl(node);
+    size_.fetch_add(1);
   }
 
   std::unique_ptr<value_type> pop_front() {
@@ -69,6 +72,7 @@ class concurrent_queue {
     if (node == sentinel) {
       return std::unique_ptr<value_type>();
     } else {
+      size_.fetch_sub(1);
       auto val = node->value_;
       delete node;
       return std::unique_ptr<value_type>(val);
@@ -77,13 +81,13 @@ class concurrent_queue {
 
  private:
   void push_back_impl(node_type* node) noexcept {
-    node->next_ = sentinel;
+    node->next_.store(sentinel);
     auto tail = tail_.exchange(node);
     if (tail == sentinel) {
       head_.store(node);
     } else {
       // guarantee: tail is not released
-      tail->next_ = node;
+      tail->next_.store(node);
     }
   }
 
@@ -96,7 +100,7 @@ class concurrent_queue {
       }
       if (head != nullptr) {
         if (head_.compare_exchange_weak(head, nullptr)) {
-          auto next = head->next_;
+          auto next = head->next_.load();
           if (next == sentinel) {
             auto t = head;
             // only one element
@@ -108,10 +112,10 @@ class concurrent_queue {
             size_t j = 0;
             do {
               // push-pop conflict, spin
-              if (0 == j++ % 10) {
+              if (0 == ++j % 10) {
                 std::this_thread::yield();
               }
-              next = head->next_;
+              next = head->next_.load();
             } while (next == sentinel);
           }
           head_.store(next);
@@ -127,8 +131,9 @@ class concurrent_queue {
     }
   }
 
-  std::atomic<node_type*> head_, tail_;
+  std::atomic<node_type *> head_, tail_;
   node_type* const sentinel;
+  std::atomic<size_t> size_;
   bool _clear_when_destruct;
 };
 
