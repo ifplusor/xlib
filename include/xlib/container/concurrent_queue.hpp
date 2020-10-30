@@ -1,5 +1,5 @@
-#ifndef XLIB_CONCURRENT_QUEUE_HPP
-#define XLIB_CONCURRENT_QUEUE_HPP
+#ifndef XLIB_CONTAINER_CONCURRENTQUEUE_HPP_
+#define XLIB_CONTAINER_CONCURRENTQUEUE_HPP_
 
 #include <atomic>
 #include <memory>
@@ -131,7 +131,7 @@ class concurrent_queue {
     }
   }
 
-  std::atomic<node_type *> head_, tail_;
+  std::atomic<node_type*> head_, tail_;
   node_type* const sentinel;
   std::atomic<size_t> size_;
   bool _clear_when_destruct;
@@ -139,4 +139,4 @@ class concurrent_queue {
 
 }  // namespace xlib
 
-#endif  // XLIB_CONCURRENT_QUEUE_HPP
+#endif  // XLIB_CONTAINER_CONCURRENTQUEUE_HPP_

@@ -1,11 +1,12 @@
-#ifndef XLIB_EXECUTOR_HPP
-#define XLIB_EXECUTOR_HPP
+#ifndef XLIB_EXECUTOR_EXECUTOR_HPP_
+#define XLIB_EXECUTOR_EXECUTOR_HPP_
 
 #include <functional>
 #include <future>
+#include <memory>
 #include <utility>
 
-#include "../time.hpp"
+#include "xlib/time.hpp"
 
 namespace xlib {
 
@@ -65,6 +66,6 @@ class scheduled_executor_service : virtual public executor_service {
 
 }  // namespace xlib
 
-#include "impl/executor_impl.hpp"
+#include "detail/scheduled_thread_pool_executor.ipp"
 
-#endif  // XLIB_EXECUTOR_HPP
+#endif  // XLIB_EXECUTOR_EXECUTOR_HPP_

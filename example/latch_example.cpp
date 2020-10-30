@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 
-#include "sync/latch.hpp"
+#include "xlib/sync/latch.hpp"
 
 using namespace xlib;
 

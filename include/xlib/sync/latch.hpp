@@ -1,5 +1,5 @@
-#ifndef XLIB_LATCH_HPP
-#define XLIB_LATCH_HPP
+#ifndef XLIB_SYNC_LATCH_HPP_
+#define XLIB_SYNC_LATCH_HPP_
 
 #include <atomic>
 #include <cassert>
@@ -7,7 +7,7 @@
 #include <future>
 #include <thread>
 
-#include "../time.hpp"
+#include "xlib/time.hpp"
 
 namespace xlib {
 
@@ -105,4 +105,4 @@ class latch {
 
 }  // namespace xlib
 
-#endif  // XLIB_LATCH_HPP
+#endif  // XLIB_SYNC_LATCH_HPP_

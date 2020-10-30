@@ -1,115 +1,11 @@
-#ifndef XLIB_EXECUTOR_IMPL_HPP
-#define XLIB_EXECUTOR_IMPL_HPP
+#ifndef XLIB_EXECUTOR_DETAIL_SCHEDULEDTHREADPOOLEXECUTOR_IPP_
+#define XLIB_EXECUTOR_DETAIL_SCHEDULEDTHREADPOOLEXECUTOR_IPP_
 
-#include <atomic>
-#include <functional>
-#include <memory>
 #include <queue>
 
-#include "../../container/concurrent_queue.hpp"
-#include "../../system/thread_group.hpp"
-#include "../../time.hpp"
+#include "xlib/executor/detail/thread_pool_executor.ipp"
 
 namespace xlib {
-
-class abstract_executor_service : virtual public executor_service {
- public:
-  std::future<void> submit(const handler_type& task) override {
-    std::unique_ptr<executor_handler> handler(new executor_handler(const_cast<handler_type&>(task)));
-    std::future<void> fut = handler->promise_->get_future();
-    execute(std::move(handler));
-    return fut;
-  }
-};
-
-class thread_pool_executor : public abstract_executor_service {
- public:
-  explicit thread_pool_executor(std::size_t num_threads, bool start_immediately = true)
-      : task_queue_(), state_(STOP), num_threads_(num_threads), free_threads_(0) {
-    if (start_immediately) {
-      startup();
-    }
-  }
-  explicit thread_pool_executor(const std::string& name, std::size_t num_threads, bool start_immediately = true)
-      : task_queue_(), state_(STOP), num_threads_(num_threads), thread_group_(name), free_threads_(0) {
-    if (start_immediately) {
-      startup();
-    }
-  }
-
-  virtual void startup() {
-    if (state_ == STOP) {
-      state_ = RUNNING;
-      thread_group_.create_threads(std::bind(&thread_pool_executor::run, this), num_threads_);
-      thread_group_.start();
-    }
-  }
-
-  void shutdown(bool immediately = true) override {
-    if (state_ == RUNNING) {
-      state_ = immediately ? STOP : SHUTDOWN;
-      wakeup_event_.notify_all();
-      thread_group_.join();
-      state_ = STOP;
-    }
-  }
-
-  bool is_shutdown() override { return state_ != RUNNING; }
-
-  std::size_t num_threads() { return num_threads_; }
-
- protected:
-  static const unsigned int ACCEPT_NEW_TASKS = 1U << 0U;
-  static const unsigned int PROCESS_QUEUED_TASKS = 1U << 1U;
-
-  enum state { STOP = 0, SHUTDOWN = PROCESS_QUEUED_TASKS, RUNNING = ACCEPT_NEW_TASKS | PROCESS_QUEUED_TASKS };
-
-  void execute(std::unique_ptr<executor_handler> command) override {
-    if (state_ & ACCEPT_NEW_TASKS) {
-      task_queue_.push_back(command.release());
-      if (free_threads_ > 0) {
-        wakeup_event_.notify_one();
-      }
-    } else {
-      command->abort(std::logic_error("executor don't accept new tasks."));
-    }
-  }
-
-  void run() {
-    while (state_ & PROCESS_QUEUED_TASKS) {
-      auto task = task_queue_.pop_front();
-      if (task != nullptr) {
-        task->operator()();
-      } else {
-        if (!(state_ & ACCEPT_NEW_TASKS)) {
-          // don't accept new tasks
-          break;
-        }
-
-        // wait new tasks
-        std::unique_lock<std::mutex> lock(wakeup_mutex_);
-        if (task_queue_.empty()) {
-          free_threads_++;
-          wakeup_event_.wait_for(lock, std::chrono::seconds(5));
-          free_threads_--;
-        }
-      }
-    }
-  }
-
- protected:
-  concurrent_queue<executor_handler> task_queue_;
-
- private:
-  state state_;
-
-  std::size_t num_threads_;
-  thread_group thread_group_;
-
-  std::mutex wakeup_mutex_;
-  std::condition_variable wakeup_event_;
-  std::atomic<int> free_threads_;
-};
 
 struct scheduled_executor_handler : public executor_handler {
   std::chrono::steady_clock::time_point wakeup_time_;
@@ -289,4 +185,4 @@ class scheduled_thread_pool_executor : public thread_pool_executor, virtual publ
 
 }  // namespace xlib
 
-#endif  // XLIB_EXECUTOR_IMPL_HPP
+#endif  // XLIB_EXECUTOR_DETAIL_SCHEDULEDTHREADPOOLEXECUTOR_IPP_

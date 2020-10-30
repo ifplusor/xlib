@@ -1,8 +1,8 @@
 // reference: asio/detail/thread_group.hpp
-#ifndef XLIB_THREAD_GROUP_HPP
-#define XLIB_THREAD_GROUP_HPP
+#ifndef XLIB_SYSTEM_THREADGROUP_HPP_
+#define XLIB_SYSTEM_THREADGROUP_HPP_
 
-#include "thread.hpp"
+#include "xlib/system/thread.hpp"
 
 namespace xlib {
 
@@ -75,4 +75,4 @@ class thread_group {
 
 }  // namespace xlib
 
-#endif  // XLIB_THREAD_GROUP_HPP
+#endif  // XLIB_SYSTEM_THREADGROUP_HPP_

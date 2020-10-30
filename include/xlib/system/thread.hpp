@@ -1,5 +1,5 @@
-#ifndef XLIB_THREAD_HPP
-#define XLIB_THREAD_HPP
+#ifndef XLIB_SYSTEM_THREAD_HPP_
+#define XLIB_SYSTEM_THREAD_HPP_
 
 #include <functional>
 #include <memory>
@@ -148,4 +148,4 @@ class thread {
 
 }  // namespace xlib
 
-#endif  // XLIB_THREAD_HPP
+#endif  // XLIB_SYSTEM_THREAD_HPP_
