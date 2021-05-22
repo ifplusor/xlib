@@ -1,0 +1,7 @@
+---
+BasedOnStyle: Chromium
+ColumnLimit: 120
+TabWidth: 2
+---
+Language: Cpp
+Standard: c++20

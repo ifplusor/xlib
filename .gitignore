@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Clion
+.idea/
+*.iml
+cmake-build-*/
+
+# clangd
+.cache/
+
+# ccls
+.ccls
+.ccls-cache/
+
+# Project
+build/
