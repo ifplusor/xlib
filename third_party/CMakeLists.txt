@@ -33,3 +33,10 @@ if(NOT lib_ranges_ENABLE)
     GIT_SHALLOW TRUE)
   FetchContent_MakeAvailable(ranges-v3)
 endif()
+
+FetchContent_Declare(
+  mio
+  GIT_REPOSITORY "https://github.com/aeic/mio.git"
+  GIT_TAG "8c0d3c7c23c595803d07c44a6088fc3ac920fa3d"
+  GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(mio)

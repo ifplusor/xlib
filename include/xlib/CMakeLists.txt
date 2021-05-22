@@ -4,6 +4,7 @@ add_subdirectory(utility)
 add_subdirectory(container)
 add_subdirectory(ranges)
 add_subdirectory(numeric)
+add_subdirectory(io)
 add_subdirectory(filesystem)
 
 target_sources(
