@@ -20,3 +20,19 @@ if(NOT subproject)
 endif()
 
 add_subdirectory(third_party)
+
+set(XLIB_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
+
+add_library(xlib INTERFACE)
+add_library(xlib::xlib ALIAS xlib)
+
+target_compile_options(xlib INTERFACE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+target_include_directories(xlib INTERFACE $<BUILD_INTERFACE:${XLIB_INCLUDE_DIR}>
+                                          $<INSTALL_INTERFACE:include>)
+target_link_libraries(xlib INTERFACE gsl::gsl-lite-v1)
+
+add_library(xlib-headers INTERFACE)
+add_library(xlib::xlib-headers ALIAS xlib-headers)
+target_link_libraries(xlib-headers INTERFACE xlib)
+
+add_subdirectory(include/xlib)
