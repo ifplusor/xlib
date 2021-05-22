@@ -53,6 +53,12 @@
 #define _XLIB_CONCEPTS 201907L
 #endif  // _XLIB_STD_VER >= 2020L
 
+#if __cpp_lib_filesystem >= 201703L
+#define _XLIB_LIB_FILESYSTEM __cpp_lib_filesystem
+#elif _XLIB_STD_VER >= 2017L && _XLIB_HAS_INCLUDE(<filesystem>)
+#define _XLIB_LIB_FILESYSTEM 201703L
+#endif  // _XLIB_STD_VER >= 2017L && _XLIB_HAS_INCLUDE(<filesystem>)
+
 #if __cpp_lib_bit_cast >= 201806L
 #define _XLIB_LIB_BIT_CAST __cpp_lib_bit_cast
 #elif _XLIB_STD_VER >= 2020L

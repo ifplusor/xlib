@@ -20,6 +20,7 @@ if(NOT subproject)
 endif()
 
 include(DetectCxxFeature)
+detect_cxx_feature(lib_filesystem)
 
 add_subdirectory(third_party)
 
