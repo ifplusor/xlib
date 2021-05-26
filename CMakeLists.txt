@@ -38,3 +38,10 @@ add_library(xlib::xlib-headers ALIAS xlib-headers)
 target_link_libraries(xlib-headers INTERFACE xlib)
 
 add_subdirectory(include/xlib)
+
+option(xlib.test "Run the xlib test" OFF)
+if(xlib.test)
+  message(STATUS "xlib.test: Do execution testing")
+  enable_testing()
+  add_subdirectory(test)
+endif()
