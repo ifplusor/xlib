@@ -1,3 +1,4 @@
+add_subdirectory(concepts)
 add_subdirectory(types)
 add_subdirectory(utility)
 
