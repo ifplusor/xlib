@@ -1,0 +1,10 @@
+target_sources(
+  xlib-headers
+  INTERFACE
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/receiver.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/operation_state.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/sender.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/typed_sender.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/sender_to.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/scheduler.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/execution/concept/executor.hpp")
