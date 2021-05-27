@@ -15,3 +15,12 @@ if(NOT lib_filesystem_ENABLE)
     GIT_SHALLOW TRUE)
   FetchContent_MakeAvailable(filesystem)
 endif()
+
+if(NOT lib_ranges_ENABLE)
+  FetchContent_Declare(
+    ranges-v3
+    GIT_REPOSITORY "https://github.com/aeic/range-v3.git"
+    GIT_TAG "0487cca29e352e8f16bbd91fda38e76e39a0ed28"
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(ranges-v3)
+endif()

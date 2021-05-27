@@ -21,6 +21,7 @@ endif()
 
 include(DetectCxxFeature)
 detect_cxx_feature(lib_filesystem)
+detect_cxx_feature(lib_ranges)
 
 add_subdirectory(third_party)
 

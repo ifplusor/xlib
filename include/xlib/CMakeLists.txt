@@ -2,6 +2,7 @@ add_subdirectory(concepts)
 add_subdirectory(types)
 add_subdirectory(utility)
 add_subdirectory(container)
+add_subdirectory(ranges)
 add_subdirectory(numeric)
 add_subdirectory(filesystem)
 
