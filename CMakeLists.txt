@@ -19,6 +19,8 @@ if(NOT subproject)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+include(DetectCxxFeature)
+
 add_subdirectory(third_party)
 
 set(XLIB_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
