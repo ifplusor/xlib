@@ -65,6 +65,12 @@
 #define _XLIB_LIB_BIT_CAST 201806L
 #endif  // _XLIB_STD_VER >= 2020L
 
+#if __cpp_lib_format >= 201907L
+#define _XLIB_LIB_FORMAT __cpp_lib_format
+#elif _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<format>)
+#define _XLIB_LIB_FORMAT 201907L
+#endif  // _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<format>)
+
 #if __cpp_lib_ranges >= 201911L
 #define _XLIB_LIB_RANGES __cpp_lib_ranges
 #elif _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<ranges>)

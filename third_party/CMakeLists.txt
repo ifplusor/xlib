@@ -16,6 +16,15 @@ if(NOT lib_filesystem_ENABLE)
   FetchContent_MakeAvailable(filesystem)
 endif()
 
+if(NOT lib_format_ENABLE)
+  FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY "https://github.com/aeic/fmt.git"
+    GIT_TAG "8.0.1"
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(fmt)
+endif()
+
 if(NOT lib_ranges_ENABLE)
   FetchContent_Declare(
     ranges-v3
