@@ -5,3 +5,6 @@ TabWidth: 2
 ---
 Language: Cpp
 Standard: c++20
+AlwaysBreakTemplateDeclarations: "Yes"
+BreakBeforeConceptDeclarations: true
+IndentRequires: false

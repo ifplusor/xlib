@@ -1,0 +1,10 @@
+target_sources(
+  xlib-headers
+  INTERFACE
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_member_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_static_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/prefer_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_member_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_static_traits.hpp")

@@ -1,15 +1,34 @@
 add_subdirectory(concepts)
 add_subdirectory(types)
 add_subdirectory(utility)
+add_subdirectory(property)
+add_subdirectory(memory)
+add_subdirectory("string")
 add_subdirectory(container)
 add_subdirectory(ranges)
 add_subdirectory(numeric)
 add_subdirectory(io)
 add_subdirectory(filesystem)
+add_subdirectory(thread)
+add_subdirectory(execution)
 
 target_sources(
   xlib-headers
   INTERFACE "${XLIB_INCLUDE_DIR}/xlib/__config.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/type_traits.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/functional.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/socpe.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/chrono.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/result_state.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/format.hpp"
             "${XLIB_INCLUDE_DIR}/xlib/conqueue.hpp"
             "${XLIB_INCLUDE_DIR}/xlib/bit.hpp"
-            "${XLIB_INCLUDE_DIR}/xlib/filesystem.hpp")
+            "${XLIB_INCLUDE_DIR}/xlib/buffer.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/mmap.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/filesystem.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/thread.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/shared_mutex.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/future.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/latch.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/execution.hpp"
+            "${XLIB_INCLUDE_DIR}/xlib/thread_pool.hpp")

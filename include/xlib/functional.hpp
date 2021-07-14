@@ -1,0 +1,6 @@
+#ifndef XLIB_UTILITY_FUNCTIONAL_HPP_
+#define XLIB_UTILITY_FUNCTIONAL_HPP_
+
+#include <functional>
+
+#endif  // XLIB_UTILITY_FUNCTIONAL_HPP_

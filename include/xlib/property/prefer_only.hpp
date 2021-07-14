@@ -1,0 +1,6 @@
+#ifndef XLIB_PROPERTY_PREFERONLY_HPP_
+#define XLIB_PROPERTY_PREFERONLY_HPP_
+
+namespace xlib::execution {}
+
+#endif  // XLIB_PROPERTY_PREFERONLY_HPP_

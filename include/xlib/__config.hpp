@@ -29,6 +29,12 @@
 #define _XLIB_VARIABLE_TEMPLATES 201304L
 #endif  // _XLIB_STD_VER >= 2014L
 
+#if __cpp_constexpr >= 201304L || _XLIB_STD_VER >= 2014L
+#define _XLIB_CONSTEXPR constexpr
+#else  // __cpp_constexpr >= 201304L || _XLIB_STD_VER >= 2014L
+#define _XLIB_CONSTEXPR inline
+#endif  // __cpp_constexpr >= 201304L || _XLIB_STD_VER >= 2014L
+
 #if __cpp_inline_variables >= 201606L
 #define _XLIB_INLINE_VARIABLES __cpp_inline_variables
 #elif _XLIB_STD_VER >= 2017L
@@ -40,6 +46,12 @@
 #else  // defined(_XLIB_INLINE_VARIABLES)
 #define _XLIB_INLINE_VAR
 #endif  // defined(_XLIB_INLINE_VARIABLES)
+
+#if _XLIB_STD_VER >= 2020L
+#define _XLIB_CONSTEXPR_CTOR _XLIB_CONSTEXPR
+#else  // _XLIB_STD_VER >= 2020L
+#define _XLIB_CONSTEXPR_CTOR
+#endif  // _XLIB_STD_VER >= 2020L
 
 #if __cpp_if_constexpr >= 201606L
 #define _XLIB_IF_CONSTEXPR __cpp_if_constexpr
@@ -71,10 +83,22 @@
 #define _XLIB_LIB_FORMAT 201907L
 #endif  // _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<format>)
 
+#if __cpp_lib_three_way_comparison >= 201907L
+#define _XLIB_LIB_THREE_WAY_COMPARISON __cpp_lib_three_way_comparison
+#elif _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<compare>)
+#define _XLIB_LIB_THREE_WAY_COMPARISON 201907L
+#endif  // _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<compare>)
+
 #if __cpp_lib_ranges >= 201911L
 #define _XLIB_LIB_RANGES __cpp_lib_ranges
 #elif _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<ranges>)
 #define _XLIB_LIB_RANGES 201911L
 #endif  // _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<ranges>)
+
+#if __cpp_lib_concepts >= 202002L
+#define _XLIB_LIB_CONCEPTS __cpp_lib_concepts
+// #elif _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<concepts>)
+// #define _XLIB_LIB_CONCEPTS 202002L
+#endif  // _XLIB_STD_VER >= 2020L && _XLIB_HAS_INCLUDE(<concepts>)
 
 #endif  // XLIB_CONFIG_HPP_

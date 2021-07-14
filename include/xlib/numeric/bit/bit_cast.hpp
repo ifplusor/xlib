@@ -17,7 +17,7 @@ using std::bit_cast;
 
 #include <cstring>  // std::memcpy
 
-#include "xlib/concepts/backport.hpp"
+#include "xlib/concepts/concept.hpp"
 #include "xlib/types/type_traits/is_trivially_copyable.hpp"
 
 namespace xlib {
@@ -25,13 +25,13 @@ namespace xlib {
 namespace detail {
 
 template <typename To, typename From>
-XLIB_CONCEPT __can_bit_cast =
+xlib_concept __can_bit_cast =
     sizeof(To) == sizeof(From) && is_trivially_copyable<To>::value&& is_trivially_copyable<From>::value;
 
 }  // namespace detail
 
 template <class To, class From>
-XLIB_REQUIRES_ST(inline constexpr, (detail::__can_bit_cast<To, From>), To)
+xlib_requires_st(inline constexpr, (detail::__can_bit_cast<To, From>), To)
 bit_cast(const From& from) noexcept {
   typename std::aligned_storage<sizeof(To), alignof(To)>::type storage;
   std::memcpy(&storage, &from, sizeof(To));  // Above `constexpr` is optimistic, fails here.

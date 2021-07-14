@@ -1,2 +1,5 @@
 add_subdirectory(functional)
+add_subdirectory(scope)
+add_subdirectory(result_state)
 add_subdirectory(format)
+# add_subdirectory(utility)

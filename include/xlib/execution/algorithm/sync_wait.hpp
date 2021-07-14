@@ -10,7 +10,7 @@
 #include "xlib/execution/sender/connect.hpp"
 #include "xlib/execution/type_traits/sender_value.hpp"
 #include "xlib/types/type_traits/remove_cvref.hpp"
-#include "xlib/utility/result_state.hpp"
+#include "xlib/utility/result_state/result_state.hpp"
 
 namespace xlib::execution {
 

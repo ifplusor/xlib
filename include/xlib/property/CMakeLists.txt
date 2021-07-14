@@ -1,0 +1,18 @@
+target_sources(
+  xlib-headers
+  INTERFACE
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_member_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/require_static_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/prefer_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_free_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_member_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/type_traits/query_static_traits.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/require.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/prefer.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/query.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/is_applicable_property.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/can_require.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/can_prefer.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/can_query.hpp"
+    "${XLIB_INCLUDE_DIR}/xlib/property/enumeration.hpp")

@@ -1,0 +1,9 @@
+#ifndef XLIB_PREPROCESSOR_FACILITIES_CHACK_HPP_
+#define XLIB_PREPROCESSOR_FACILITIES_CHACK_HPP_
+
+#include "xlib/preprocessor/facilities/expand.hpp"
+
+#define XLIB_PP_CHECK(...) XLIB_PP_EXPAND(XLIB_PP_CHECK_N(__VA_ARGS__, 0, ))
+#define XLIB_PP_CHECK_N(X, N, ...) N
+
+#endif  // XLIB_PREPROCESSOR_FACILITIES_CHACK_HPP_

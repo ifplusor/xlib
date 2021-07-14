@@ -14,8 +14,8 @@ project(
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(NOT subproject)
-  message(VERBOSE "xlib is top project")
-  set(CMAKE_CXX_STANDARD 20)
+  message(STATUS "xlib is top project")
+  set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
@@ -47,4 +47,11 @@ if(xlib.test)
   message(STATUS "xlib.test: Do execution testing")
   enable_testing()
   add_subdirectory(test)
+endif()
+
+include(CMakeDependentOption)
+cmake_dependent_option(xlib.example "Build the xlib example" ON
+                       "NOT subproject" OFF)
+if(xlib.example)
+  add_subdirectory(example)
 endif()
